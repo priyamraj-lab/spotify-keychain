@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DIY Electronic Spotify Player Keychain | Interactive 3D Guide</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        spotify: {
+                            green: '#1DB954',
+                            lightgreen: '#1ed760',
+                            dark: '#121212',
+                            card: '#181818',
+                            hover: '#282828'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #090d16;
+            color: #f1f5f9;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* Glassmorphism background effect */
+        .glass-card {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .glass-nav {
+            background: rgba(9, 13, 22, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        /* Neon Glows */
+        .glow-green {
+            box-shadow: 0 0 25px rgba(29, 185, 84, 0.35);
+        }
+
+        .glow-green-sm {
+            box-shadow: 0 0 12px rgba(29, 185, 84, 0.25);
+        }
+
+        .text-gradient {
+            background: linear-gradient(135deg, #ffffff 0%, #1DB954 60%, #38bdf8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #090d16;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #1DB954;
+        }
+
+        #spotify-lcd-canvas {
+            display: none;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Hidden Offscreen Canvas for Dynamic 1024x1024 Spotify Screen Texture -->
+    <canvas id="spotify-lcd-canvas" width="1024" height="1024"></canvas>
+
+    <!-- Navigation Header -->
+    <nav class="fixed top-0 left-0 right-0 z-50 glass-nav transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-3 cursor-pointer" onclick="window.scrollTo({top:0, behavior:'smooth'})">
+                <div class="w-10 h-10 rounded-full bg-spotify-green flex items-center justify-center text-black font-extrabold text-xl shadow-lg shadow-spotify-green/30">
+                    <i class="fa-brands fa-spotify"></i>
+                </div>
+                <div>
+                    <span class="font-extrabold text-lg tracking-tight text-white flex items-center gap-2">
+                        SPOTIFY <span class="text-spotify-green text-xs px-2 py-0.5 rounded-full bg-spotify-green/10 border border-spotify-green/30">DIY DISPLAY</span>
+                    </span>
+                    <p class="text-[10px] text-slate-400 font-mono">Hardware & 3D Interactive Spec</p>
+                </div>
+            </div>
+
+            <div class="hidden md:flex items-center gap-8 text-sm font-semibold">
+                <a href="#viewport-3d" class="text-slate-300 hover:text-spotify-green transition">3D Interactive Model</a>
+                <a href="#materials" class="text-slate-300 hover:text-spotify-green transition">Materials & Hardware</a>
+                <a href="#wiring" class="text-slate-300 hover:text-spotify-green transition">Circuit & Pinout</a>
+                <a href="#guide" class="text-slate-300 hover:text-spotify-green transition">Step-by-Step Guide</a>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <a href="#viewport-3d" class="px-5 py-2.5 rounded-full bg-spotify-green hover:bg-spotify-lightgreen text-slate-950 font-bold text-xs uppercase tracking-wider transition transform hover:-translate-y-0.5 shadow-lg shadow-spotify-green/20 flex items-center gap-2">
+                    <i class="fa-solid fa-cube"></i>
+                    <span>Launch 3D Lab</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="relative pt-32 pb-20 lg:pt-40 lg:pb-32 overflow-hidden">
+        <!-- Ambient background glows -->
+        <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-spotify-green/10 rounded-full blur-[140px] pointer-events-none"></div>
+        <div class="absolute top-1/3 right-10 w-[400px] h-[400px] bg-cyan-500/10 rounded-full blur-[120px] pointer-events-none"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                
+                <div class="lg:col-span-7 space-y-6 text-center lg:text-left">
+                    <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-800/80 border border-slate-700/60 text-xs font-mono text-spotify-green mb-2">
+                        <span class="w-2 h-2 rounded-full bg-spotify-green animate-ping"></span>
+                        Microcontroller-Powered Animated Keyring
+                    </div>
+                    
+                    <h1 class="text-4xl sm:text-6xl font-extrabold tracking-tight text-white leading-[1.15]">
+                        Build Your Own <br>
+                        <span class="text-gradient">Electronic Spotify</span> Display Keychain
+                    </h1>
+
+                    <p class="text-base sm:text-lg text-slate-300 leading-relaxed max-w-2xl mx-auto lg:mx-0">
+                        Craft a high-tech, rechargeable pocket album player. Features an ESP32-C3 mini microchip, vivid 1.54" IPS screen, 300mAh LiPo battery, custom 3D printed matte enclosure, and real-time animated Spotify playback.
+                    </p>
+
+                    <div class="pt-4 flex flex-wrap items-center justify-center lg:justify-start gap-4">
+                        <a href="#viewport-3d" class="px-8 py-4 rounded-xl bg-spotify-green hover:bg-spotify-lightgreen text-slate-950 font-bold text-sm tracking-wide transition transform hover:-translate-y-1 shadow-xl shadow-spotify-green/25 flex items-center gap-3">
+                            <i class="fa-solid fa-up-right-and-down-left-from-center"></i>
+                            <span>Explore 3D Exploded View</span>
+                        </a>
+                        <a href="#guide" class="px-8 py-4 rounded-xl glass-card hover:bg-slate-800/80 text-white font-bold text-sm tracking-wide transition border border-slate-700 flex items-center gap-3">
+                            <i class="fa-solid fa-code"></i>
+                            <span>Read DIY Guide</span>
+                        </a>
+                    </div>
+
+                    <!-- Tech specs pills -->
+                    <div class="pt-8 grid grid-cols-3 gap-4 border-t border-slate-800/80 text-left">
+                        <div>
+                            <p class="text-xs text-slate-400 font-mono">BATTERY LIFE</p>
+                            <p class="text-lg font-extrabold text-white">4.5 Hours</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-slate-400 font-mono">RESOLUTION</p>
+                            <p class="text-lg font-extrabold text-white">240 × 240 IPS</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-slate-400 font-mono">CHARGING</p>
+                            <p class="text-lg font-extrabold text-white">USB-C TP4056</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hero Graphic Card Preview -->
+                <div class="lg:col-span-5 flex justify-center">
+                    <div class="relative w-full max-w-md glass-card p-6 rounded-3xl border border-slate-700/60 shadow-2xl overflow-hidden group">
+                        <div class="absolute -right-12 -top-12 w-40 h-40 bg-spotify-green/20 rounded-full blur-2xl group-hover:bg-spotify-green/30 transition"></div>
+                        
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-xs font-mono text-slate-400 uppercase tracking-widest">Hardware Preview</span>
+                            <span class="px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-400 text-xs font-bold border border-emerald-500/30">Fully Custom</span>
+                        </div>
+
+                        <!-- Card Mock Image Display -->
+                        <div class="aspect-square rounded-2xl bg-slate-900/90 border border-slate-800 p-4 relative flex flex-col justify-between overflow-hidden shadow-inner">
+                            <div class="flex items-center justify-between z-10">
+                                <i class="fa-brands fa-spotify text-2xl text-spotify-green"></i>
+                                <span class="text-[10px] font-mono text-slate-400">ST7789 SPI LCD</span>
+                            </div>
+
+                            <!-- Animated Mock Player Center -->
+                            <div class="text-center space-y-3 z-10 py-4">
+                                <div class="w-32 h-32 mx-auto rounded-xl bg-gradient-to-tr from-purple-600 via-rose-500 to-amber-400 p-1 shadow-lg shadow-purple-500/20 animate-pulse">
+                                    <div class="w-full h-full bg-slate-950 rounded-lg flex items-center justify-center">
+                                        <i class="fa-solid fa-music text-3xl text-spotify-green"></i>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-white text-sm">Streets</h4>
+                                    <p class="text-xs text-slate-400">Doja Cat</p>
+                                </div>
+                            </div>
+
+                            <!-- Progress bar -->
+                            <div class="space-y-1 z-10">
+                                <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                                    <div class="bg-spotify-green h-full w-2/3"></div>
+                                </div>
+                                <div class="flex justify-between text-[9px] font-mono text-slate-400">
+                                    <span>2:14</span>
+                                    <span>3:47</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 flex items-center justify-between text-xs text-slate-400 font-mono">
+                            <span>Form Factor: 5.2 × 6.8 cm</span>
+                            <span class="text-spotify-green">Weight: ~42g</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive 3D Canvas Viewport Section -->
+    <section id="viewport-3d" class="py-16 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6">
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+                <div>
+                    <div class="flex items-center gap-2 text-xs font-mono text-spotify-green uppercase tracking-wider mb-2">
+                        <i class="fa-solid fa-vr-cardboard"></i> Real-time Hardware Visualizer
+                    </div>
+                    <h2 class="text-3xl font-extrabold text-white">Interactive 3D Assembly & Screen Lab</h2>
+                </div>
+                <p class="text-sm text-slate-400 max-w-md">
+                    Use your mouse or touch gestures to rotate, inspect, explode hardware components, and change live song playback themes on the display screen.
+                </p>
+            </div>
+        </div>
+
+        <!-- 3D Canvas Box Container -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="relative w-full h-[650px] rounded-3xl glass-card border border-slate-700/70 overflow-hidden shadow-2xl">
+                
+                <!-- WebGL Renderer Canvas -->
+                <div id="webgl-container" class="w-full h-full"></div>
+
+                <!-- Floating Dock Controls (Overlay) -->
+                <div class="absolute bottom-6 left-6 right-6 z-20 flex flex-wrap items-center justify-between gap-4 pointer-events-none">
+                    
+                    <!-- Left Dock: Main Action Buttons -->
+                    <div class="flex flex-wrap items-center gap-3 pointer-events-auto">
+                        <button id="toggle-explode-btn" class="px-5 py-3 rounded-xl bg-spotify-green hover:bg-spotify-lightgreen text-slate-950 font-extrabold text-xs uppercase tracking-wider transition transform hover:scale-105 shadow-xl shadow-spotify-green/20 flex items-center gap-2">
+                            <i class="fa-solid fa-layer-group text-sm"></i>
+                            <span id="explode-text">Explode Components View</span>
+                        </button>
+
+                        <button id="toggle-power-btn" class="px-4 py-3 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-white font-semibold text-xs border border-slate-700 transition flex items-center gap-2 shadow-lg">
+                            <i id="power-icon" class="fa-solid fa-power-off text-spotify-green"></i>
+                            <span id="power-btn-text">Screen: ON</span>
+                        </button>
+
+                        <button id="reset-cam-btn" class="px-4 py-3 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-white font-semibold text-xs border border-slate-700 transition flex items-center gap-2 shadow-lg">
+                            <i class="fa-solid fa-rotate-left text-blue-400"></i>
+                            <span>Reset View</span>
+                        </button>
+                    </div>
+
+                    <!-- Right Dock: Track Changer -->
+                    <div class="flex items-center gap-2 bg-slate-950/90 p-1.5 rounded-2xl border border-slate-800 pointer-events-auto shadow-xl">
+                        <span class="text-[10px] font-mono text-slate-400 px-3 uppercase hidden sm:inline">Track Switcher</span>
+                        <button id="prev-track-btn" class="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white transition text-xs">
+                            <i class="fa-solid fa-backward-step"></i>
+                        </button>
+                        <span id="current-track-name" class="text-xs font-bold text-white px-3 font-mono">Streets - Doja Cat</span>
+                        <button id="next-track-btn" class="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white transition text-xs">
+                            <i class="fa-solid fa-forward-step"></i>
+                        </button>
+                    </div>
+
+                </div>
+
+                <!-- Top Left Status Badge -->
+                <div class="absolute top-6 left-6 z-20 pointer-events-none">
+                    <div class="bg-slate-950/80 backdrop-blur-md px-4 py-2 rounded-xl border border-slate-800 flex items-center gap-3 shadow-lg">
+                        <div id="status-dot" class="w-2.5 h-2.5 rounded-full bg-spotify-green animate-pulse"></div>
+                        <span id="component-status-text" class="text-xs font-mono text-slate-200">Assembled View (3D Printed Enclosure)</span>
+                    </div>
+                </div>
+
+                <!-- Top Right Instructions -->
+                <div class="absolute top-6 right-6 z-20 pointer-events-none hidden md:block">
+                    <div class="bg-slate-950/80 backdrop-blur-md px-4 py-2 rounded-xl border border-slate-800 text-[11px] font-mono text-slate-400 flex items-center gap-4">
+                        <span><i class="fa-solid fa-mouse text-slate-300 mr-1"></i> Left Click + Drag: Rotate</span>
+                        <span><i class="fa-solid fa-arrows-up-down-left-right text-slate-300 mr-1"></i> Right Click: Pan</span>
+                        <span><i class="fa-solid fa-magnifying-glass text-slate-300 mr-1"></i> Scroll: Zoom</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Materials & Hardware Requirements Section -->
+    <section id="materials" class="py-20 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16 space-y-3">
+                <span class="text-xs font-mono text-spotify-green uppercase tracking-widest bg-spotify-green/10 border border-spotify-green/30 px-3 py-1 rounded-full">
+                    Component Breakdown
+                </span>
+                <h2 class="text-3xl sm:text-4xl font-extrabold text-white">Required Materials & Bill of Materials</h2>
+                <p class="text-slate-400 text-sm sm:text-base">
+                    All parts are easily accessible online via Amazon, AliExpress, or electronic hobby stores.
+                </p>
+            </div>
+
+            <!-- Cards Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+                <!-- Part 1 -->
+                <div class="glass-card p-6 rounded-2xl border border-slate-800 hover:border-spotify-green/50 transition group flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400 font-bold">
+                                01
+                            </span>
+                            <span class="text-xs font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded">~$3.50</span>
+                        </div>
+                        <h3 class="font-bold text-white text-lg group-hover:text-spotify-green transition">ESP32-C3 Super Mini</h3>
+                        <p class="text-xs text-slate-400 mt-2 leading-relaxed">
+                            Ultra-compact RISC-V microcontroller with onboard WiFi/Bluetooth, high clock speed, and SPI display output capability.
+                        </p>
+                    </div>
+                    <div class="mt-6 pt-4 border-t border-slate-800 text-[11px] font-mono text-slate-400 space-y-1">
+                        <div><strong class="text-slate-300">Clock:</strong> 160 MHz</div>
+                        <div><strong class="text-slate-300">Size:</strong> 22.5 × 18 mm</div>
+                    </div>
+                </div>
+
+                <!-- Part 2 -->
+                <div class="glass-card p-6 rounded-2xl border border-slate-800 hover:border-spotify-green/50 transition group flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 font-bold">
+                                02
+                            </span>
+                            <span class="text-xs font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded">~$4.80</span>
+                        </div>
+                        <h3 class="font-bold text-white text-lg group-hover:text-spotify-green transition">1.54" SPI ST7789 TFT LCD</h3>
+                        <p class="text-xs text-slate-400 mt-2 leading-relaxed">
+                            Vivid 240×240 pixel IPS color screen module driven over high-speed SPI bus for smooth animated graphics rendering.
+                        </p>
+                    </div>
+                    <div class="mt-6 pt-4 border-t border-slate-800 text-[11px] font-mono text-slate-400 space-y-1">
+                        <div><strong class="text-slate-300">Bus:</strong> 4-Wire SPI</div>
+                        <div><strong class="text-slate-300">Color Depth:</strong> 65K RGB565</div>
+                    </div>
+                </div>
+
+                <!-- Part 3 -->
+                <div class="glass-card p-6 rounded-2xl border border-slate-800 hover:border-spotify-green/50 transition group flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 font-bold">
+                                03
+                            </span>
+                            <span class="text-xs font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded">~$2.50</span>
+                        </div>
+                        <h3 class="font-bold text-white text-lg group-hover:text-spotify-green transition">3.7V 300mAh LiPo Battery</h3>
+                        <p class="text-xs text-slate-400 mt-2 leading-relaxed">
+                            Rechargeable lithium polymer battery sized perfectly (approx 30×20mm) to fit inside the 3D enclosure behind the board.
+                        </p>
+                    </div>
+                    <div class="mt-6 pt-4 border-t border-slate-800 text-[11px] font-mono text-slate-400 space-y-1">
+                        <div><strong class="text-slate-300">Voltage:</strong> 3.7V (4.2V Peak)</div>
+                        <div><strong class="text-slate-300">Runtime:</strong> 4 - 5 Hours</div>
+                    </div>
+                </div>
+
+                <!-- Part 4 -->
+                <div class="glass-card p-6 rounded-2xl border border-slate-800 hover:border-spotify-green/50 transition group flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/30 flex items-center justify-center text-blue-400 font-bold">
+                                04
+                            </span>
+                            <span class="text-xs font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded">~$1.20</span>
+                        </div>
+                        <h3 class="font-bold text-white text-lg group-hover:text-spotify-green transition">TP4056 Type-C Charger</h3>
+                        <p class="text-xs text-slate-400 mt-2 leading-relaxed">
+                            Compact lithium charging circuit module featuring USB-C input port with integrated overcharge protection circuitry.
+                        </p>
+                    </div>
+                    <div class="mt-6 pt-4 border-t border-slate-800 text-[11px] font-mono text-slate-400 space-y-1">
+                        <div><strong class="text-slate-300">Input:</strong> 5V Type-C</div>
+                        <div><strong class="text-slate-300">Charge Current:</strong> 1A Max</div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Circuit Pinout & Schematic Visualizer -->
+    <section id="wiring" class="py-20 relative bg-slate-950/60 border-y border-slate-800/80">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                
+                <div class="lg:col-span-5 space-y-6">
+                    <span class="text-xs font-mono text-spotify-green uppercase tracking-widest bg-spotify-green/10 border border-spotify-green/30 px-3 py-1 rounded-full">
+                        SPI Pinout Wiring
+                    </span>
+                    <h2 class="text-3xl font-extrabold text-white">Circuit Schematic Guide</h2>
+                    <p class="text-slate-400 text-sm leading-relaxed">
+                        Connect the ST7789 display pins to the ESP32-C3 Super Mini SPI header pins according to the pinout configuration map below.
+                    </p>
+
+                    <!-- Pinout Table -->
+                    <div class="glass-card rounded-2xl overflow-hidden border border-slate-800">
+                        <table class="w-full text-left text-xs font-mono">
+                            <thead class="bg-slate-900/90 text-slate-400 uppercase">
+                                <tr>
+                                    <th class="p-3">Display Pin</th>
+                                    <th class="p-3">ESP32-C3 Pin</th>
+                                    <th class="p-3">Function</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-800 text-slate-300">
+                                <tr class="hover:bg-slate-800/50">
+                                    <td class="p-3 font-bold text-cyan-400">VCC</td>
+                                    <td class="p-3 text-emerald-400">3.3V</td>
+                                    <td class="p-3 text-slate-400">Power Supply</td>
+                                </tr>
+                                <tr class="hover:bg-slate-800/50">
+                                    <td class="p-3 font-bold text-cyan-400">GND</td>
+                                    <td class="p-3 text-emerald-400">GND</td>
+                                    <td class="p-3 text-slate-400">Ground</td>
+                                </tr>
+                                <tr class="hover:bg-slate-800/50">
+                                    <td class="p-3 font-bold text-cyan-400">SCL / CLK</td>
+                                    <td class="p-3 text-emerald-400">GPIO 8</td>
+                                    <td class="p-3 text-slate-400">SPI Clock</td>
+                                </tr>
+                                <tr class="hover:bg-slate-800/50">
+                                    <td class="p-3 font-bold text-cyan-400">SDA / MOSI</td>
+                                    <td class="p-3 text-emerald-400">GPIO 9</td>
+                                    <td class="p-3 text-slate-400">SPI Master Out</td>
+                                </tr>
+                                <tr class="hover:bg-slate-800/50">
+                                    <td class="p-3 font-bold text-cyan-400">RES / RST</td>
+                                    <td class="p-3 text-emerald-400">GPIO 4</td>
+                                    <td class="p-3 text-slate-400">Display Reset</td>
+                                </tr>
+                                <tr class="hover:bg-slate-800/50">
+                                    <td class="p-3 font-bold text-cyan-400">DC / RS</td>
+                                    <td class="p-3 text-emerald-400">GPIO 5</td>
+                                    <td class="p-3 text-slate-400">Data / Command</td>
+                                </tr>
+                                <tr class="hover:bg-slate-800/50">
+                                    <td class="p-3 font-bold text-cyan-400">CS</td>
+                                    <td class="p-3 text-emerald-400">GPIO 7</td>
+                                    <td class="p-3 text-slate-400">Chip Select</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Graphic Circuit Diagram Box -->
+                <div class="lg:col-span-7">
+                    <div class="glass-card p-6 rounded-3xl border border-slate-800 relative">
+                        <div class="flex items-center justify-between mb-6">
+                            <h4 class="font-bold text-white text-sm">Power & Module Routing Schematic</h4>
+                            <span class="text-xs font-mono text-spotify-green">Wiring Diagram</span>
+                        </div>
+
+                        <!-- Circuit Diagram Layout -->
+                        <div class="space-y-6">
+                            <!-- Battery & Charger block -->
+                            <div class="p-4 rounded-xl bg-slate-900/90 border border-slate-800 flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <i class="fa-solid fa-battery-full text-2xl text-amber-400"></i>
+                                    <div>
+                                        <h5 class="font-bold text-xs text-white">LiPo Battery (3.7V)</h5>
+                                        <p class="text-[10px] font-mono text-slate-400">Connect to TP4056 B+ and B- pads</p>
+                                    </div>
+                                </div>
+                                <i class="fa-solid fa-arrow-right text-slate-600"></i>
+                                <div class="flex items-center gap-3">
+                                    <i class="fa-solid fa-microchip text-2xl text-blue-400"></i>
+                                    <div>
+                                        <h5 class="font-bold text-xs text-white">TP4056 Charger</h5>
+                                        <p class="text-[10px] font-mono text-slate-400">OUT+ to Switch / OUT- to GND</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Switch to MCU block -->
+                            <div class="p-4 rounded-xl bg-slate-900/90 border border-slate-800 flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <i class="fa-solid fa-toggle-on text-2xl text-spotify-green"></i>
+                                    <div>
+                                        <h5 class="font-bold text-xs text-white">ON/OFF Slide Switch</h5>
+                                        <p class="text-[10px] font-mono text-slate-400">Inline with 5V Power rail</p>
+                                    </div>
+                                </div>
+                                <i class="fa-solid fa-arrow-right text-slate-600"></i>
+                                <div class="flex items-center gap-3">
+                                    <i class="fa-solid fa-memory text-2xl text-purple-400"></i>
+                                    <div>
+                                        <h5 class="font-bold text-xs text-white">ESP32-C3 Board</h5>
+                                        <p class="text-[10px] font-mono text-slate-400">5V / GND power header</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Step-by-Step DIY Build Guide Section -->
+    <section id="guide" class="py-20 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16 space-y-3">
+                <span class="text-xs font-mono text-spotify-green uppercase tracking-widest bg-spotify-green/10 border border-spotify-green/30 px-3 py-1 rounded-full">
+                    Build Walkthrough
+                </span>
+                <h2 class="text-3xl sm:text-4xl font-extrabold text-white">Step-by-Step DIY Process</h2>
+                <p class="text-slate-400 text-sm sm:text-base">
+                    Follow these four core stages to flash firmware, assemble hardware, and finish your custom acrylic keychain.
+                </p>
+            </div>
+
+            <!-- Steps Tabs Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                
+                <!-- Step 1 -->
+                <div class="glass-card p-8 rounded-3xl border border-slate-800 space-y-4">
+                    <div class="flex items-center justify-between">
+                        <span class="px-3 py-1 rounded-full bg-spotify-green/10 border border-spotify-green/30 text-spotify-green text-xs font-mono font-bold">
+                            STAGE 01
+                        </span>
+                        <i class="fa-solid fa-palette text-slate-600 text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white">Graphic UI & Animation Conversion</h3>
+                    <p class="text-xs text-slate-300 leading-relaxed">
+                        Design a 240×240 pixel Spotify player artwork using Photoshop or Canva. Convert your video loop into a sequence of JPG frames or an MJPEG stream using <code>ffmpeg</code> so the ESP32 microcontroller can decode frames in real time from memory.
+                    </p>
+                    <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 text-[11px] font-mono text-slate-300">
+                        <code>ffmpeg -i spotify_loop.mp4 -vf scale=240:240 -q:v 3 frame_%04d.jpg</code>
+                    </div>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="glass-card p-8 rounded-3xl border border-slate-800 space-y-4">
+                    <div class="flex items-center justify-between">
+                        <span class="px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs font-mono font-bold">
+                            STAGE 02
+                        </span>
+                        <i class="fa-solid fa-microchip text-slate-600 text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white">Arduino Firmware Flashing</h3>
+                    <p class="text-xs text-slate-300 leading-relaxed">
+                        Open Arduino IDE, select board <strong>ESP32C3 Dev Module</strong>, install libraries <code>TFT_eSPI</code> and <code>TJpg_Decoder</code>. Configure your pin definitions in User_Setup.h to match the ST7789 display.
+                    </p>
+                    <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 text-[11px] font-mono text-slate-300">
+                        <code>#define ST7789_DRIVER<br>#define TFT_WIDTH 240<br>#define TFT_HEIGHT 240</code>
+                    </div>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="glass-card p-8 rounded-3xl border border-slate-800 space-y-4">
+                    <div class="flex items-center justify-between">
+                        <span class="px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-mono font-bold">
+                            STAGE 03
+                        </span>
+                        <i class="fa-solid fa-plug text-slate-600 text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white">Soldering & Circuit Wiring</h3>
+                    <p class="text-xs text-slate-300 leading-relaxed">
+                        Solder short silicon flexible wires between the ESP32-C3 SPI headers, ST7789 display module, TP4056 charger board, and power switch. Tuck the 300mAh LiPo battery neatly behind the screen.
+                    </p>
+                </div>
+
+                <!-- Step 4 -->
+                <div class="glass-card p-8 rounded-3xl border border-slate-800 space-y-4">
+                    <div class="flex items-center justify-between">
+                        <span class="px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/30 text-purple-400 text-xs font-mono font-bold">
+                            STAGE 04
+                        </span>
+                        <i class="fa-solid fa-box-open text-slate-600 text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white">3D Case Assembly & UV Resin Lens</h3>
+                    <p class="text-xs text-slate-300 leading-relaxed">
+                        Insert hardware into the custom 3D printed matte enclosure. Place the laser-cut clear acrylic lens over the LCD window. Optional: apply a drop of UV resin along the lens rim and cure under UV light for a glass-like finish.
+                    </p>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-800/80 bg-slate-950 py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-full bg-spotify-green flex items-center justify-center text-black font-bold">
+                    <i class="fa-brands fa-spotify"></i>
+                </div>
+                <span class="font-bold text-white text-sm">DIY Spotify Keychain Visualizer</span>
+            </div>
+            <p class="text-xs text-slate-400 font-mono">Designed with Three.js & Tailwind CSS for DIY Makers</p>
+        </div>
+    </footer>
+
+    <!-- Three.js & OrbitControls & Tween.js Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js"></script>
+
+    <!-- 3D ENGINE & CANVAS RENDERER SCRIPT -->
+    <script>
+        // --- 1. SPOTIFY DISPLAY SCREEN ANIMATED CANVAS ---
+        const lcdCanvas = document.getElementById('spotify-lcd-canvas');
+        const lcdCtx = lcdCanvas.getContext('2d');
+        let progress = 0.35;
+        let screenOn = true;
+
+        const tracks = [
+            { title: 'Streets', artist: 'Doja Cat', duration: '3:47', totalSec: 227, colors: ['#833ab4', '#fd1d1d', '#fcb045'] },
+            { title: 'Starboy', artist: 'The Weeknd', duration: '3:50', totalSec: 230, colors: ['#000000', '#dc2626', '#ef4444'] },
+            { title: 'Levitating', artist: 'Dua Lipa', duration: '3:23', totalSec: 203, colors: ['#4c1d95', '#c084fc', '#38bdf8'] }
+        ];
+        let currentTrackIdx = 0;
+
+        function drawAlbumArt(ctx, x, y, size) {
+            ctx.save();
+            ctx.beginPath();
+            ctx.roundRect(x, y, size, size, 24);
+            ctx.clip();
+            
+            const currentTrack = tracks[currentTrackIdx];
+            let bgGrad = ctx.createLinearGradient(x, y, x + size, y + size);
+            bgGrad.addColorStop(0, currentTrack.colors[0]);
+            bgGrad.addColorStop(0.5, currentTrack.colors[1]);
+            bgGrad.addColorStop(1, currentTrack.colors[2]);
+            ctx.fillStyle = bgGrad;
+            ctx.fillRect(x, y, size, size);
+
+            ctx.beginPath();
+            ctx.arc(x + size/2, y + size/2 + 20, 100, 0, Math.PI * 2);
+            let sunGrad = ctx.createLinearGradient(x, y + size/2 - 80, x, y + size/2 + 120);
+            sunGrad.addColorStop(0, '#ffffff');
+            sunGrad.addColorStop(1, currentTrack.colors[1]);
+            ctx.fillStyle = sunGrad;
+            ctx.fill();
+
+            ctx.fillStyle = '#0f172a';
+            ctx.beginPath();
+            ctx.moveTo(x, y + size);
+            ctx.lineTo(x + size/2 - 40, y + size/2 + 40);
+            ctx.lineTo(x + size/2 + 80, y + size);
+            ctx.fill();
+
+            ctx.restore();
+        }
+
+        function drawSpotifyCode(ctx, x, y, w, h) {
+            ctx.fillStyle = '#1DB954';
+            ctx.beginPath();
+            ctx.roundRect(x, y, w, h, 16);
+            ctx.fill();
+
+            ctx.fillStyle = '#000000';
+            ctx.beginPath();
+            ctx.arc(x + 50, y + h/2, 24, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.strokeStyle = '#1DB954';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.arc(x + 50, y + h/2 + 16, 28, Math.PI * 1.25, Math.PI * 1.75);
+            ctx.stroke();
+
+            const barHeights = [24, 44, 32, 56, 28, 52, 64, 36, 48, 28, 56, 40, 30, 50, 24, 40, 52, 28, 44];
+            const startX = x + 100;
+            const spacing = 22;
+            
+            ctx.fillStyle = '#000000';
+            barHeights.forEach((height, i) => {
+                ctx.beginPath();
+                ctx.roundRect(startX + (i * spacing), y + (h - height)/2, 9, height, 4);
+                ctx.fill();
+            });
+        }
+
+        function updateLcdCanvas() {
+            if (!screenOn) {
+                lcdCtx.fillStyle = '#000000';
+                lcdCtx.fillRect(0, 0, 1024, 1024);
+                return;
+            }
+
+            const currentTrack = tracks[currentTrackIdx];
+
+            let bgGradient = lcdCtx.createLinearGradient(0, 0, 0, 1024);
+            bgGradient.addColorStop(0, '#1db95422');
+            bgGradient.addColorStop(0.3, '#121212');
+            bgGradient.addColorStop(1, '#050505');
+            lcdCtx.fillStyle = bgGradient;
+            lcdCtx.fillRect(0, 0, 1024, 1024);
+
+            lcdCtx.fillStyle = '#1DB954';
+            lcdCtx.font = '700 32px Plus Jakarta Sans, sans-serif';
+            lcdCtx.textAlign = 'center';
+            lcdCtx.fillText('SPOTIFY PLAYER', 512, 70);
+
+            drawAlbumArt(lcdCtx, 232, 110, 560);
+
+            lcdCtx.fillStyle = '#ffffff';
+            lcdCtx.font = '800 52px Plus Jakarta Sans, sans-serif';
+            lcdCtx.textAlign = 'left';
+            lcdCtx.fillText(currentTrack.title, 90, 750);
+
+            lcdCtx.fillStyle = '#b3b3b3';
+            lcdCtx.font = '600 38px Plus Jakarta Sans, sans-serif';
+            lcdCtx.fillText(currentTrack.artist, 90, 805);
+
+            lcdCtx.fillStyle = '#1DB954';
+            lcdCtx.font = '45px sans-serif';
+            lcdCtx.fillText('♥', 880, 765);
+
+            progress += 0.001;
+            if (progress > 1) progress = 0;
+
+            const barX = 90;
+            const barY = 845;
+            const barW = 844;
+
+            lcdCtx.fillStyle = '#3e3e3e';
+            lcdCtx.beginPath();
+            lcdCtx.roundRect(barX, barY, barW, 12, 6);
+            lcdCtx.fill();
+
+            lcdCtx.fillStyle = '#1DB954';
+            lcdCtx.beginPath();
+            lcdCtx.roundRect(barX, barY, barW * progress, 12, 6);
+            lcdCtx.fill();
+
+            lcdCtx.fillStyle = '#ffffff';
+            lcdCtx.beginPath();
+            lcdCtx.arc(barX + (barW * progress), barY + 6, 14, 0, Math.PI * 2);
+            lcdCtx.fill();
+
+            lcdCtx.fillStyle = '#a7a7a7';
+            lcdCtx.font = '500 28px Plus Jakarta Sans, sans-serif';
+            const curSec = Math.floor(progress * currentTrack.totalSec);
+            const mins = Math.floor(curSec / 60);
+            const secs = String(curSec % 60).padStart(2, '0');
+            lcdCtx.fillText(`${mins}:${secs}`, 90, 890);
+            lcdCtx.textAlign = 'right';
+            lcdCtx.fillText(currentTrack.duration, 934, 890);
+
+            drawSpotifyCode(lcdCtx, 90, 915, 844, 85);
+        }
+
+        // --- 2. THREE.JS SCENE SETUP ---
+        const container = document.getElementById('webgl-container');
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color('#090d16');
+
+        const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+        camera.position.set(0, 0, 18);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" });
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 1.3;
+        container.appendChild(renderer.domElement);
+
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.maxDistance = 35;
+        controls.minDistance = 5;
+
+        // Lighting
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
+        scene.add(ambientLight);
+
+        const mainSpot = new THREE.DirectionalLight(0xffffff, 1.4);
+        mainSpot.position.set(10, 15, 15);
+        mainSpot.castShadow = true;
+        scene.add(mainSpot);
+
+        const fillLight = new THREE.PointLight(0x1DB954, 2.0, 30);
+        fillLight.position.set(-10, -5, 10);
+        scene.add(fillLight);
+
+        // --- 3. 3D KEYCHAIN MODEL BUILDER ---
+        const mainGroup = new THREE.Group();
+        scene.add(mainGroup);
+
+        const frontAssembly = new THREE.Group();
+        const electronicsAssembly = new THREE.Group();
+        const rearAssembly = new THREE.Group();
+
+        mainGroup.add(frontAssembly);
+        mainGroup.add(electronicsAssembly);
+        mainGroup.add(rearAssembly);
+
+        const screenTexture = new THREE.CanvasTexture(lcdCanvas);
+        screenTexture.minFilter = THREE.LinearFilter;
+        screenTexture.magFilter = THREE.LinearFilter;
+        screenTexture.encoding = THREE.sRGBEncoding;
+
+        // Materials
+        const matteBlackPlastic = new THREE.MeshStandardMaterial({ color: 0x18181b, roughness: 0.45, metalness: 0.1 });
+        const metallicSilver = new THREE.MeshStandardMaterial({ color: 0xd4d4d8, metalness: 0.85, roughness: 0.2 });
+        const pcbGreenMaterial = new THREE.MeshStandardMaterial({ color: 0x064e3b, roughness: 0.3, metalness: 0.2 });
+        const chipBlackMaterial = new THREE.MeshStandardMaterial({ color: 0x09090b, roughness: 0.2, metalness: 0.5 });
+        const batterySilverMaterial = new THREE.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.7, roughness: 0.3 });
+
+        const acrylicGlassMaterial = new THREE.MeshPhysicalMaterial({
+            color: 0xffffff,
+            transparent: true,
+            opacity: 0.2,
+            roughness: 0.02,
+            transmission: 0.95,
+            thickness: 0.3,
+            ior: 1.5
+        });
+
+        const screenMaterial = new THREE.MeshStandardMaterial({
+            map: screenTexture,
+            emissiveMap: screenTexture,
+            emissive: new THREE.Color(0xffffff),
+            emissiveIntensity: 0.9,
+            roughness: 0.1
+        });
+
+        const caseWidth = 5.2;
+        const caseHeight = 6.8;
+        const cornerRadius = 0.6;
+
+        function createRoundedBox(w, h, d, r) {
+            const shape = new THREE.Shape();
+            const x = -w/2, y = -h/2;
+            shape.moveTo(x + r, y);
+            shape.lineTo(x + w - r, y);
+            shape.quadraticCurveTo(x + w, y, x + w, y + r);
+            shape.lineTo(x + w, y + h - r);
+            shape.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+            shape.lineTo(x + r, y + h);
+            shape.quadraticCurveTo(x, y + h, x, y + h - r);
+            shape.lineTo(x, y + r);
+            shape.quadraticCurveTo(x, y, x + r, y);
+
+            const extrudeSettings = { depth: d, bevelEnabled: true, bevelSegments: 4, steps: 1, bevelSize: 0.1, bevelThickness: 0.1 };
+            const geom = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+            geom.center();
+            return geom;
+        }
+
+        // Back Shell
+        const backCaseMesh = new THREE.Mesh(createRoundedBox(caseWidth, caseHeight, 0.8, cornerRadius), matteBlackPlastic);
+        backCaseMesh.position.z = -0.4;
+        rearAssembly.add(backCaseMesh);
+
+        // USB-C port
+        const usbcPort = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.4, 0.6), metallicSilver);
+        usbcPort.position.set(0, -caseHeight/2 - 0.05, 0);
+        rearAssembly.add(usbcPort);
+
+        // Hardware keyring loops
+        const topLoop = new THREE.Mesh(new THREE.TorusGeometry(0.5, 0.15, 16, 32), metallicSilver);
+        topLoop.position.set(0, caseHeight/2 + 0.4, -0.2);
+        topLoop.rotation.x = Math.PI / 2;
+        rearAssembly.add(topLoop);
+
+        const ring1 = new THREE.Mesh(new THREE.TorusGeometry(1.2, 0.1, 16, 32), metallicSilver);
+        ring1.position.set(0, caseHeight/2 + 1.8, -0.2);
+        rearAssembly.add(ring1);
+
+        // Electronics Stack
+        const esp32Pcb = new THREE.Mesh(new THREE.BoxGeometry(2.4, 3.2, 0.15), pcbGreenMaterial);
+        esp32Pcb.position.set(-1.0, 1.2, -0.1);
+        electronicsAssembly.add(esp32Pcb);
+
+        const espChip = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.2, 0.1), chipBlackMaterial);
+        espChip.position.set(-1.0, 1.4, 0.02);
+        electronicsAssembly.add(espChip);
+
+        const battery = new THREE.Mesh(new THREE.BoxGeometry(2.2, 3.0, 0.5), batterySilverMaterial);
+        battery.position.set(1.1, 1.1, -0.1);
+        electronicsAssembly.add(battery);
+
+        const tp4056Pcb = new THREE.Mesh(new THREE.BoxGeometry(2.2, 1.8, 0.15), new THREE.MeshStandardMaterial({ color: 0x1d4ed8 }));
+        tp4056Pcb.position.set(0, -1.8, -0.1);
+        electronicsAssembly.add(tp4056Pcb);
+
+        // Front Shell & Display
+        const frontFrameMesh = new THREE.Mesh(createRoundedBox(caseWidth, caseHeight, 0.4, cornerRadius), matteBlackPlastic);
+        frontFrameMesh.position.z = 0.4;
+        frontAssembly.add(frontFrameMesh);
+
+        const screenMesh = new THREE.Mesh(new THREE.PlaneGeometry(4.4, 4.4), screenMaterial);
+        screenMesh.position.set(0, 0.5, 0.61);
+        frontAssembly.add(screenMesh);
+
+        const acrylicLens = new THREE.Mesh(createRoundedBox(caseWidth - 0.2, caseHeight - 0.2, 0.1, cornerRadius - 0.05), acrylicGlassMaterial);
+        acrylicLens.position.z = 0.72;
+        frontAssembly.add(acrylicLens);
+
+        // --- 4. INTERACTIVE EVENT LISTENERS ---
+        let isExploded = false;
+
+        function setExplodeState(explode) {
+            isExploded = explode;
+            const textElem = document.getElementById('explode-text');
+            const statusElem = document.getElementById('component-status-text');
+
+            if (isExploded) {
+                textElem.innerText = "Assemble Keychain View";
+                statusElem.innerText = "Exploded View: ESP32-C3, LiPo Battery & Circuitry";
+
+                new TWEEN.Tween(frontAssembly.position).to({ z: 3.5, y: 0.5 }, 800).easing(TWEEN.Easing.Cubic.Out).start();
+                new TWEEN.Tween(electronicsAssembly.position).to({ z: 1.2 }, 800).easing(TWEEN.Easing.Cubic.Out).start();
+                new TWEEN.Tween(rearAssembly.position).to({ z: -2.0 }, 800).easing(TWEEN.Easing.Cubic.Out).start();
+            } else {
+                textElem.innerText = "Explode Components View";
+                statusElem.innerText = "Assembled View (3D Printed Enclosure)";
+
+                new TWEEN.Tween(frontAssembly.position).to({ z: 0, y: 0 }, 800).easing(TWEEN.Easing.Cubic.Out).start();
+                new TWEEN.Tween(electronicsAssembly.position).to({ z: 0 }, 800).easing(TWEEN.Easing.Cubic.Out).start();
+                new TWEEN.Tween(rearAssembly.position).to({ z: 0 }, 800).easing(TWEEN.Easing.Cubic.Out).start();
+            }
+        }
+
+        document.getElementById('toggle-explode-btn').addEventListener('click', () => {
+            setExplodeState(!isExploded);
+        });
+
+        document.getElementById('toggle-power-btn').addEventListener('click', () => {
+            screenOn = !screenOn;
+            const powerIcon = document.getElementById('power-icon');
+            const powerText = document.getElementById('power-btn-text');
+            const dot = document.getElementById('status-dot');
+
+            if (screenOn) {
+                screenMaterial.emissiveIntensity = 0.9;
+                powerIcon.className = "fa-solid fa-power-off text-spotify-green";
+                powerText.innerText = "Screen: ON";
+                dot.className = "w-2.5 h-2.5 rounded-full bg-spotify-green animate-pulse";
+            } else {
+                screenMaterial.emissiveIntensity = 0;
+                powerIcon.className = "fa-solid fa-power-off text-slate-500";
+                powerText.innerText = "Screen: OFF";
+                dot.className = "w-2.5 h-2.5 rounded-full bg-slate-600";
+            }
+        });
+
+        function updateTrackUI() {
+            const currentTrack = tracks[currentTrackIdx];
+            document.getElementById('current-track-name').innerText = `${currentTrack.title} - ${currentTrack.artist}`;
+            progress = 0;
+        }
+
+        document.getElementById('next-track-btn').addEventListener('click', () => {
+            currentTrackIdx = (currentTrackIdx + 1) % tracks.length;
+            updateTrackUI();
+        });
+
+        document.getElementById('prev-track-btn').addEventListener('click', () => {
+            currentTrackIdx = (currentTrackIdx - 1 + tracks.length) % tracks.length;
+            updateTrackUI();
+        });
+
+        document.getElementById('reset-cam-btn').addEventListener('click', () => {
+            new TWEEN.Tween(camera.position).to({ x: 0, y: 0, z: 18 }, 1000).easing(TWEEN.Easing.Cubic.Out).start();
+            new TWEEN.Tween(controls.target).to({ x: 0, y: 0, z: 0 }, 1000).easing(TWEEN.Easing.Cubic.Out).start();
+        });
+
+        window.addEventListener('resize', () => {
+            const w = container.clientWidth;
+            const h = container.clientHeight;
+            camera.aspect = w / h;
+            camera.updateProjectionMatrix();
+            renderer.setSize(w, h);
+        });
+
+        // --- 5. RENDER LOOP ---
+        function animate(time) {
+            requestAnimationFrame(animate);
+
+            TWEEN.update();
+            controls.update();
+
+            updateLcdCanvas();
+            screenTexture.needsUpdate = true;
+
+            if (!isExploded) {
+                mainGroup.rotation.y = Math.sin(time * 0.0008) * 0.12;
+                mainGroup.position.y = Math.sin(time * 0.0015) * 0.15;
+            } else {
+                mainGroup.rotation.y = THREE.MathUtils.lerp(mainGroup.rotation.y, 0, 0.05);
+                mainGroup.position.y = THREE.MathUtils.lerp(mainGroup.position.y, 0, 0.05);
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        animate();
+    </script>
+</body>
+</html>
